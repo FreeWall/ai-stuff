@@ -14,7 +14,7 @@ Variant A:
 1. Extract the diff of uncomitted changes
 
 ```bash
-  git status && git diff && git diff --cached
+  git --no-pager status && git --no-pager diff && git --no-pager diff --cached
 ```
 
 2. Follow common steps
@@ -23,7 +23,7 @@ Variant B:
 
 1. Ask me which commits you should review, list last 10 commits.
 ```bash
-  git log -n 10 --oneline
+  git --no-pager log -n 10 --oneline
 ```
 2. Extract the diff of specified commits
 3. Follow common steps
