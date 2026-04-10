@@ -37,7 +37,7 @@ Common steps:
     - Use [!CAUTION] for critical issues/risks that must be fixed.
     - Do not use any other alerts (e.g. [!NOTE], [!TIP], [!IMPORTANT], etc.)!
     - Use dynamic links to the files and line numbers if possible.
-2. Document the findings in a `code_review_report.md` artifact.
+2. Document the findings in the conversation's `artifacts/code_review_report.md` (ensuring the use of the absolute path in the `artifacts/` directory).
 
 Example of code review report:
 ```markdown
@@ -50,7 +50,7 @@ Summary of the changes
 <br>
 
 > [!CAUTION]
-> ## Issue title
+> ## 1. Issue title
 >
 > Issue description
 
@@ -58,15 +58,7 @@ Summary of the changes
 <br>
 
 > [!WARNING]
-> ## Issue title
->
-> Issue description
-
----
-<br>
-
-> [!WARNING]
-> ## Issue title
+> ## 2. Issue title
 >
 > Issue description
 ```
