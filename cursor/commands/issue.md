@@ -8,7 +8,7 @@ If the session is **not** in Plan mode:
 2. **Stop.** Do not fetch the issue, create a branch, explore the codebase, or write a plan.
 3. Tell the user to continue the same request after Plan mode is active.
 
-Only when already in Plan mode, run the steps below, then build the implementation plan from the issue + codebase (no code changes until the user approves the plan). **Save the final plan to `<workspace>/.cursor/plans/` using Write** (see below — not CreatePlan).
+Only when already in Plan mode, run the steps below, then build the implementation plan from the issue + codebase (no code changes until the user approves the plan).
 
 Extract issue number `N` from `TTA-N`, `#N`, or `.../issues/N`. If missing, ask once.
 
@@ -63,18 +63,3 @@ git checkout -b <new-branch-name>
 
 While building the plan, use **/grill-me** (read and follow the **grill-me** skill) when requirements are unclear, several designs are viable, or the change touches security, money, or provider contracts.
 Skip grill-me for straightforward, fully specified bugs.
-
-## Save the plan to workspace
-
-**Mandatory.** The plan file must live in the **project workspace**, not in user-level Cursor storage.
-
-- **Do not** use the `CreatePlan` tool — it saves under `~/.cursor/plans/`, which is wrong for this workflow.
-- **Do** use the **Write** tool (create `.cursor/plans/` first if missing) at:
-
-  `<workspace-root>/.cursor/plans/TTA-<N>-<short-slug>.plan.md`
-
-  Example: `.cursor/plans/TTA-631-trace-header.plan.md`
-
-- Include YAML frontmatter with `name`, `overview`, and `todos` (same structure as a normal plan).
-- After writing, tell the user the workspace path (e.g. `.cursor/plans/TTA-631-trace-header.plan.md`) so they can open it in the repo.
-- You may still present a summary in chat, but the **Write** step is required — do not finish `/issue` without it.
