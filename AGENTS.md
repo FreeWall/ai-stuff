@@ -6,3 +6,7 @@
 
 1. Use `git --no-pager` before any Git command (e.g., `log`, `diff`, `show`).
 2. Prefer `--oneline` for logs and `--stat` for diffs to get a high-level overview without exhausting the context window.
+
+# Concise Rule
+
+Be extremely concise. Sacrifice grammar for the sake of concision.
