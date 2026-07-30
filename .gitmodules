@@ -1,0 +1,3 @@
+[submodule "trade"]
+	path = trade
+	url = git@github.com:FreeWall/ai-stuff-trade.git
