@@ -26,7 +26,7 @@ No model picker or swaps. If a slug is rejected, use the closest valid slug from
 
 ## 3) Model reviewer prompt (identical for each model)
 
-Include intent + code/diff. Review the relevant code with a code review mindset. Prioritize bugs, behavioral regressions, security issues, and missing tests. Findings must be the primary focus, ordered by severity. Do not make code changes unless the user explicitly asks for them. Ask for structured findings with severity (critical | warning | nit), concrete locations, evidence, optional suggestion; say "no findings" if nothing is wrong.
+Include intent + code/diff. Review the relevant code with a code review mindset. Prioritize bugs, behavioral regressions, security issues, and missing tests. Findings must be the primary focus, ordered by severity. Do not make code changes unless the user explicitly asks for them. Ask for structured findings with severity (high | medium | low), concrete locations, evidence, optional suggestion; say "no findings" if nothing is wrong.
 
 ## 4) Synthesize
 
