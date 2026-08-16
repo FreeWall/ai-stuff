@@ -1,0 +1,16 @@
+---
+alwaysApply: true
+---
+
+## Coding preferences - general
+
+- Keep things simple. Channel "yagni" energy unless told otherwise.
+- Typesafety is useful, take advantage of it.
+- Tests are good! Endless smoke tests, "regression tests" for feature deletions, etc, much less good. Tests should be focused, not slop.
+
+## Coding preferences - (TypeScript focused)
+
+- `any` is the enemy. Inferred types are our friend. Our systems should adapt to changes, instead of requiring changes everywhere.
+- Avoid one-line functions that are just casting wrappers.
+- Write TypeScript in ways that Matt Pocock would be proud of.
+- If not already specified in project, I generally like to use the following tech: yarn, React, Tailwind, Zustand, React Query

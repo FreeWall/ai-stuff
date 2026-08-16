@@ -2,12 +2,7 @@
 
 ## Plan mode required
 
-If the session is **not** in Plan mode:
-
-1. Call **SwitchMode** with `target_mode_id: plan` (brief reason: planning a GitHub issue fix).
-2. **Stop.** Do not fetch the issue, create a branch, explore the codebase, or write a plan.
-3. Tell the user to continue the same request after Plan mode is active.
-
+If the session is **not** in Plan mode: Call **SwitchMode** with `target_mode_id: plan`.
 Only when already in Plan mode, run the steps below, then build the implementation plan from the issue + codebase (no code changes until the user approves the plan).
 
 Extract issue number `N` from `TTA-N`, `#N`, or `.../issues/N`. If missing, ask once.

@@ -1,5 +1,4 @@
 ---
-description: Prefer node over python3 for scripts
 alwaysApply: true
 ---
 
