@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# CLI for bridge.mjs. Usage: cdp <command> [args]
+#   targets                       list open pages
+#   attach <targetId|substring>   attach to a page (url or title substring)
+#   ax [query] [max]              accessibility snapshot; query filters lines
+#   click <ref>                   click element by ref
+#   type <ref> <text> [--clear]   type into element (--clear replaces content)
+#   key <Enter|Escape|Tab|...>    press key
+#   waitfor <text> [seconds]      poll snapshot until text appears (default 15s)
+#   shot [file.png] [ref]         screenshot (viewport or element) into $CDP_OUT
+#   eval <js>                     evaluate JS in page, prints JSON result
+#   send <Method> [json-params]   raw CDP call on attached page
+#   events                        drain buffered non-network events
+set -euo pipefail
+B="http://127.0.0.1:${CDP_BRIDGE_PORT:-9339}"
+get() { curl -sS --fail-with-body -G "$B$1" "${@:2}"; }
+
+cmd="${1:-}"
+shift || true
+case "$cmd" in
+targets) get /targets ;;
+attach) get /attach --data-urlencode "target=$1" ;;
+ax) get /ax --data-urlencode "q=${1:-}" --data-urlencode "max=${2:-400}" ;;
+click) get /click --data-urlencode "ref=$1" ;;
+type) get /type --data-urlencode "ref=$1" --data-urlencode "text=$2" --data-urlencode "clear=$([[ "${3:-}" == --clear ]] && echo 1 || echo 0)" ;;
+key) get /key --data-urlencode "key=$1" ;;
+waitfor)
+    end=$((SECONDS + ${2:-15}))
+    while ((SECONDS < end)); do
+        out=$(get /ax --data-urlencode "q=$1" --data-urlencode "max=20")
+        if [[ -n "$out" ]]; then
+            echo "$out"
+            exit 0
+        fi
+        sleep 0.5
+    done
+    echo "timeout waiting for: $1" >&2
+    exit 1
+    ;;
+shot) get /shot --data-urlencode "path=${1:-}" --data-urlencode "ref=${2:-}" ;;
+eval) get /eval --data-urlencode "expr=$1" ;;
+send) curl -sS "$B/send" -d "{\"method\":\"$1\",\"params\":${2:-{\}}}" && echo ;;
+events) get /events ;;
+*)
+    sed -n '2,14p' "$0"
+    exit 1
+    ;;
+esac
