@@ -1,5 +1,0 @@
----
-alwaysApply: true
----
-
-Prefer `jq` for filtering/transforming JSON in shell pipelines (curl, gh api, files).
