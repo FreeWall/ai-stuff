@@ -1,0 +1,5 @@
+# Default models
+
+- Coordinator: Claude Haiku 5.5 via Claude (`claudeAgent`, `claude-haiku-5-5`), effort high
+- Verifier: DeepSeek V4.1 Flash via OpenCode beast (`opencode`, `beast/deepseek-ai/DeepSeek-V4.1-Flash`), `variant: "default"`
+- Verifier limit: 3 running at once
