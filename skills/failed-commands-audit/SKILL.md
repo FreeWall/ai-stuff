@@ -16,10 +16,16 @@ Find machine-specific CLI failures (missing binaries, bad paths, sandbox/PATH qu
 
 ## Where to look
 
-1. Agent transcripts under `~/.cursor/projects/*/agent-transcripts/**/*.jsonl` (all projects on this machine, not just the current repo).
-2. Prefer assistant turns after `Shell` tool calls: narration of errors, retries, fallbacks ("not found", "permission denied", "trying X instead", sandbox/PATH issues).
-3. Note: tool *results* are often absent from transcripts — infer failures from the assistant's next message + the prior `Shell` command when needed.
-4. Optionally skim recent `terminals/*.txt` for nonzero `exit_code` / `last_exit_code`.
+T3 Code stores every thread (all providers: claudeAgent, opencode, cursor, codex; incl. subagent/delegated threads) in `~/.t3/userdata/statev2.sqlite`, table `orchestration_v2_projection_turn_items`. Tool calls have real `output` + `exitCode`, so no inference needed.
+
+1. Bulk extract with the bundled script (read-only, Node 24 `node:sqlite`):
+   ```
+   node ~/.claude/skills/failed-commands-audit/extract.mjs [--since 2026-10-01] > "$TMPDIR/failures.jsonl"
+   ```
+   One JSONL row per failed `command_execution` / `dynamic_tool` / `file_change` / `file_search` item (status `failed`, nonzero `exitCode`, or `Error: Exit code N` output), with `driver`, `project`, `threadId`, `input`, `output` tail, `nextAssistant` and `nextCommand` (recovery evidence).
+2. Cluster with `jq` (e.g. by first word of `input`, by error substrings like `command not found`, `No such file`, `Operation not permitted`, `Failed to exec`). Split by `driver` — failures are often provider-specific.
+3. Drill into ambiguous clusters with `t3_thread_read` (`threadId` from the row, `view: "activity"`, small `limit`/`maxCharsPerItem`). Don't use T3 thread tools for the bulk scan: no failure filter, `t3_thread_search` skips subagent threads, and paging every thread is thousands of calls.
+4. Cursor-only history from before the T3 migration, if wanted: `~/.cursor/projects/*/agent-transcripts/**/*.jsonl` (results often missing — infer from the next assistant turn).
 
 Prefer `node` for any one-off parsing scripts (not `python3`).
 
@@ -44,4 +50,4 @@ Then give a short **agent cheat sheet** — ranked, copy-pasteable bullets:
 - Don't: …  Do: …  (why / evidence count)
 ```
 
-If a finding belongs in a Cursor rule or AGENTS.md, say so — don't write files unless asked.
+If a finding belongs in `~/.claude/CLAUDE.md`, a project CLAUDE.md/AGENTS.md, or is provider-specific (e.g. a cursor/opencode quirk), say so — don't write files unless asked.
