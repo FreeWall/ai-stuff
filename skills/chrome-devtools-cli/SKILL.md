@@ -5,6 +5,8 @@ description: Use this skill to write shell scripts or run shell commands to auto
 
 The `chrome-devtools-mcp` CLI lets you interact with the browser from your terminal.
 
+**Run every `chrome-devtools` command outside the sandbox.** The CLI talks to a background daemon over a Unix socket in `$XDG_RUNTIME_DIR`, and the daemon connects to the user's Chrome on localhost. The sandbox blocks both.
+
 ## AI Workflow
 
 1. **Execute**: Run tools directly. If you don't know the target page's ID, run `chrome-devtools list_pages` to find it. The background server starts implicitly; **do not** run `start`/`status`/`stop` before each use.
