@@ -1,0 +1,79 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+.wrap{display:flex;flex-direction:column;gap:16px}
+h3{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted-foreground)}
+.box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.tl{display:grid;grid-template-columns:70px 1fr;row-gap:12px}
+.time{padding-right:16px;text-align:right;font-variant-numeric:tabular-nums}
+.time b{display:block;font-size:14px;margin-top:13px}
+.time small{display:block;font-size:12.5px;margin-top:4px;color:var(--muted-foreground)}
+.time .mk{color:#c4b4ff;font-size:12.5px;margin-top:4px}
+.mi{width:12px;height:12px;vertical-align:-1px;margin-right:3px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;border-left:3px solid var(--c)}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
+.head > div:first-child{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px}
+.card b{font-size:14px}
+.st{font-size:11px;padding:1px 8px;border-radius:999px;--k:var(--info);background:color-mix(in srgb,var(--k) 18%,transparent);color:var(--k);white-space:nowrap}
+.st.ok{--k:var(--success)}.st.warn{--k:var(--warning)}
+.card p{margin:0;font-size:12.5px;line-height:1.45;color:var(--muted-foreground)}
+.det{margin:8px 0 0;padding:8px 0 0 18px;border-top:1px dashed var(--border);font-size:12.5px;line-height:1.5}
+.det span{color:var(--muted-foreground);font-variant-numeric:tabular-nums;margin-right:6px}
+.links{margin-top:6px;font-size:12px;display:flex;flex-wrap:wrap;gap:4px 10px}
+.links:empty{display:none}
+.links a{color:var(--info-foreground);text-decoration:none}
+.links a:hover{text-decoration:underline}
+.stack{display:flex;flex:none}
+.stack .av{margin-left:-6px;box-shadow:0 0 0 2px var(--card)}
+.stack .av:first-child{margin-left:0}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.av{position:relative;overflow:hidden;width:24px;height:24px;border-radius:50%;background:color-mix(in srgb,var(--foreground) 15%,var(--card));color:var(--foreground);display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex:none}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+td{padding:6px 4px;border-top:1px solid var(--border);vertical-align:middle}
+tr:first-child td{border-top:none}
+.who{white-space:nowrap;font-weight:600;width:96px}
+.who span{display:flex;align-items:center;gap:8px}
+.tag{font-size:11px;color:var(--muted-foreground);white-space:nowrap;text-align:right}
+.tag.pozor{color:var(--warning)}
+</style></head><body><div class="wrap">
+<div><h3 id="title"></h3><div class="tl" id="tl"></div></div>
+<div class="box"><h3>Slíbil jsi / otevřené</h3><table id="openT"></table></div>
+</div>
+<script>
+/* DATA:start */
+const DATA = {
+  title: "Čtvrtek 5. 11.",
+  people: {
+    ty: { name: "Ty", avatar: "/abs/path/avatars/U05S96UFFMK.jpg" },
+    ondra: { name: "Ondra", avatar: "/abs/path/avatars/U07UWHWMV26.jpg" },
+  },
+  topics: [
+    { title: "SLIP-24 deposit output", status: "merged + deploy", tone: "ok",
+      text: "Jedna-dvě věty o výsledku.", links: [{ label: "#895", url: "https://github.com/..." }],
+      people: ["ty", "ondra"], dots: ["07:41", "13:04"], marks: ["14:17"],
+      detail: [["07:41", "Co se stalo."], ["14:17", "Merge a deploy."]] },
+  ],
+  open: [
+    { who: "ty", text: "Co je potřeba udělat", tag: "todo" },
+    { who: null, text: "Věc bez ownera", tag: "pozor" },
+  ],
+};
+/* DATA:end */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const av = k => {
+  const p = DATA.people[k] ?? { name: k };
+  const img = p.avatar ? `<img src="${esc(p.avatar)}" onerror="this.remove()">` : "";
+  return `<span class="av" title="${esc(p.name)}">${esc(p.name[0])}${img}</span>`;
+};
+const MERGE = `<svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>`;
+const color = i => `var(--chart-${(i % 6) + 1})`;
+const items = DATA.topics.map((t, i) => ({ t, c: color(i), times: [...(t.dots ?? []), ...(t.marks ?? [])].sort() }))
+  .sort((a, b) => (a.times[0] ?? "99").localeCompare(b.times[0] ?? "99"));
+$("title").textContent = DATA.title;
+$("tl").innerHTML = items.map(({ t, c, times }) => {
+  const first = times[0], last = times.at(-1);
+  const left = `<div class="time">${first ? `<b>${first}</b>${last !== first ? `<small>– ${last}</small>` : ""}` : ""}${(t.marks ?? []).length ? `<div class="mk">${t.marks.map(m => `${MERGE}${m}`).join("<br>")}</div>` : ""}</div>`;
+  const card = `<div class="card" style="--c:${c}"><div class="head"><div><b>${esc(t.title)}</b><span class="st ${t.tone ?? ""}">${esc(t.status)}</span></div><div class="stack">${(t.people ?? []).map(av).join("")}</div></div><p>${esc(t.text)}</p>${(t.detail ?? []).length > 1 ? `<ul class="det">${t.detail.map(([h, s]) => `<li><span>${esc(h)}</span>${esc(s)}</li>`).join("")}</ul>` : ""}<div class="links">${(t.links ?? []).map(l => `<a href="${esc(l.url)}" target="_blank">${esc(l.label)}</a>`).join("")}</div></div>`;
+  return left + card;
+}).join("");
+$("openT").innerHTML = DATA.open.map(o => `<tr><td class="who">${o.who ? `<span>${av(o.who)}${esc(DATA.people[o.who]?.name ?? o.who)}</span>` : "—"}</td><td>${esc(o.text)}</td><td class="tag ${esc(o.tag)}">${esc(o.tag)}</td></tr>`).join("");
+</script></body></html>
