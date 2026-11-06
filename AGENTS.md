@@ -30,3 +30,5 @@ Never `pkill -f "<pattern>"` with a plain pattern: it matches the bash running t
 ## Waiting on background jobs
 
 Never use a bare `wait` in Bash. Sandbox shells contain long-lived `socat` proxy jobs, so a bare `wait` hangs until timeout. Save PIDs and use `wait $p1 $p2`, or just run the commands one after another.
+
+Never `sleep` to wait, and never chain `sleep N; ...`: the harness blocks it. Use `run_in_background` for a command you started, or `Monitor` with an until-loop for a condition.
