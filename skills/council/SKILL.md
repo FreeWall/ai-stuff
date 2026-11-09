@@ -37,14 +37,14 @@ If the work ends in a pull request, put the results in the PR description.
 Put this section before the model and harness line at the end:
 
 ```markdown
-## Council review
-
-Rounds: 2
+<details>
+<summary><b>🤖 LLM Council review</b></summary>
 
 | Delegate | Round 1 | Round 2 |
 | --- | --- | --- |
 | Opus 5.5 | 7/10 | 9/10 |
-| Grok 4.7 | 8/10 | 10/10 |
+| Grok 4.7 | 5/10 | 9/10 |
+</details>
 ```
 
 If a delegate gives no score, write `no score`. Do not invent one.
