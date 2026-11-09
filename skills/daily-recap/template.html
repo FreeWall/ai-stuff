@@ -6,7 +6,8 @@ h3{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.04em;c
 .time{padding-right:16px;text-align:right;font-variant-numeric:tabular-nums}
 .time b{display:block;font-size:14px;margin-top:13px}
 .time small{display:block;font-size:12.5px;margin-top:4px;color:var(--muted-foreground)}
-.time .mk{color:#c4b4ff;font-size:12.5px;margin-top:4px}
+.time .mk{font-size:12.5px;margin-top:4px}
+.mk .m{color:#c4b4ff}.mk .d{color:var(--success-foreground)}
 .mi{width:12px;height:12px;vertical-align:-1px;margin-right:3px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;border-left:3px solid var(--c)}
 .head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
@@ -48,7 +49,7 @@ const DATA = {
   topics: [
     { title: "SLIP-24 deposit output", status: "merged + deploy", tone: "ok",
       text: "Jedna-dvě věty o výsledku.", links: [{ label: "#895", url: "https://github.com/..." }],
-      people: ["ty", "ondra"], dots: ["07:41", "13:04"], marks: ["14:17"],
+      people: ["ty", "ondra"], dots: ["07:41", "13:04"], marks: ["14:17"], deploys: ["14:40"],
       detail: [["07:41", "Co se stalo."], ["14:17", "Merge a deploy."]] },
   ],
   open: [
@@ -65,13 +66,15 @@ const av = k => {
   return `<span class="av" title="${esc(p.name)}">${esc(p.name[0])}${img}</span>`;
 };
 const MERGE = `<svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>`;
+const DEPLOY = `<svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"/><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"/></svg>`;
 const color = i => `var(--chart-${(i % 6) + 1})`;
-const items = DATA.topics.map((t, i) => ({ t, c: color(i), times: [...(t.dots ?? []), ...(t.marks ?? [])].sort() }))
+const items = DATA.topics.map((t, i) => ({ t, c: color(i), times: [...(t.dots ?? []), ...(t.marks ?? []), ...(t.deploys ?? [])].sort(),
+  marks: [...(t.marks ?? []).map(m => [m, "m", MERGE]), ...(t.deploys ?? []).map(m => [m, "d", DEPLOY])].sort((a, b) => a[0].localeCompare(b[0])) }))
   .sort((a, b) => (a.times[0] ?? "99").localeCompare(b.times[0] ?? "99"));
 $("title").textContent = DATA.title;
-$("tl").innerHTML = items.map(({ t, c, times }) => {
+$("tl").innerHTML = items.map(({ t, c, times, marks }) => {
   const first = times[0], last = times.at(-1);
-  const left = `<div class="time">${first ? `<b>${first}</b>${last !== first ? `<small>– ${last}</small>` : ""}` : ""}${(t.marks ?? []).length ? `<div class="mk">${t.marks.map(m => `${MERGE}${m}`).join("<br>")}</div>` : ""}</div>`;
+  const left = `<div class="time">${first ? `<b>${first}</b>${last !== first ? `<small>– ${last}</small>` : ""}` : ""}${marks.length ? `<div class="mk">${marks.map(([m, k, icon]) => `<span class="${k}">${icon}${m}</span>`).join("<br>")}</div>` : ""}</div>`;
   const card = `<div class="card" style="--c:${c}"><div class="head"><div><b>${esc(t.title)}</b><span class="st ${t.tone ?? ""}">${esc(t.status)}</span></div><div class="stack">${(t.people ?? []).map(av).join("")}</div></div><p>${esc(t.text)}</p>${(t.detail ?? []).length > 1 ? `<ul class="det">${t.detail.map(([h, s]) => `<li><span>${esc(h)}</span>${esc(s)}</li>`).join("")}</ul>` : ""}<div class="links">${(t.links ?? []).map(l => `<a href="${esc(l.url)}" target="_blank">${esc(l.label)}</a>`).join("")}</div></div>`;
   return left + card;
 }).join("");

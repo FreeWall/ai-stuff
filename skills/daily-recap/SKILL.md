@@ -15,7 +15,7 @@ Default: yesterday in `Europe/Prague`. If yesterday is Sat/Sun and no date was g
 
 ## 2. Gather
 
-First call: load every deferred tool you'll need in one `ToolSearch` (`select:` Slack public+private search, `slack_read_thread`, `slack_search_users`, `html_render`). In the same turn, read `<skill dir>/template.html` in full and `avatars/index.json`, and start the GitHub searches.
+First call: load every deferred tool you'll need in one `ToolSearch` (`select:` Slack public+private search, `slack_read_thread`, `slack_search_users`, `html_render`). In the same turn, read `avatars/index.json`, copy `<skill dir>/template.html` to `<scratchpad>/recap-YYYY-MM-DD.html` (`cp`, not a link) and `Read` only the copy's example `DATA` block (`/* DATA:start */` … `/* DATA:end */`, find the lines with `grep -n`), and start the GitHub searches.
 
 **Slack** — search `from:<@MY_ID> on:YYYY-MM-DD` with the public+private search tool, context included with `max_context_length: 300`, all pages. Read the surrounding context to understand each thread; open a thread only when the outcome is cut off. Collect GitHub PR/issue links you see. Note the time (CET) of each of the user's messages and the Slack user IDs of the people involved.
 
@@ -40,17 +40,17 @@ For each person shown (the user included):
 
 Group by **topic** (feature, bug, integration, release, people matter), not by source; biggest first. Skip chit-chat. No duplicates across topics.
 
-Fill `DATA` (the block between `/* DATA:start */` and `/* DATA:end */` in the template read in step 2):
+Fill `DATA` (the block between `/* DATA:start */` and `/* DATA:end */` in the copy from step 2):
 - `title` — the day, e.g. "Čtvrtek 5. 11." (Fri–Sun block: "Pátek 6. – neděle 8. 11.").
 - `people` — key → `{ name, avatar }`. First names; the user is `ty` / "Ty". `avatar` = absolute path from step 3 (local paths are inlined by the render tools).
-- `topics` — per topic: `title`, `status` (2–3 words), `tone` (`ok` done / `warn` open-problem / omit = neutral), `text` (1–2 sentences: what happened, outcome/state), `links` (PRs/issues `{label, url}`), `people` (keys), `dots` (`HH:MM` of the user's Slack messages), `marks` (`HH:MM` of merges/deploys), `detail` (only when the topic has more than one distinct time: `[["HH:MM", "what happened then"], …]`, 2–5 key moments in order, one short clause each; rendered as a list under `text`). The template sorts topics by their earliest time and shows first–last time plus merge-icon marks in a vertical timeline left of each full-width card.
+- `topics` — per topic: `title`, `status` (2–3 words), `tone` (`ok` done / `warn` open-problem / omit = neutral), `text` (1–2 sentences: what happened, outcome/state), `links` (PRs/issues `{label, url}`), `people` (keys), `dots` (`HH:MM` of the user's Slack messages), `marks` (`HH:MM` of merges), `deploys` (`HH:MM` of deploys), `detail` (only when the topic has more than one distinct time: `[["HH:MM", "what happened then"], …]`, 2–5 key moments in order, one short clause each; rendered as a list under `text`). The template sorts topics by their earliest time and shows first–last time plus merge (violet) and deploy (green rocket) icons in a vertical timeline left of each full-width card.
 - `open` — promises the user made (`tag: "todo"`), things they wait on from others (`"čekáš"`, `who` = that person), unowned problems (`"pozor"`, `who: null`).
 
-Multi-day block (Fri–Sun): leave `dots`/`marks` empty (time column stays blank) and put the day in `text`.
+Multi-day block (Fri–Sun): leave `dots`/`marks`/`deploys` empty (time column stays blank) and put the day in `text`.
 
 Language: the user's (Czech by default). Paraphrase; quote only a short phrase when wording matters.
 
-Never use `html_preview`; the frame resizes itself to fit. Write `DATA` exactly once: don't stage it in a file or syntax-check it separately, and don't build or read back a merged HTML file. Pass `html_render` the template text from step 2 with the `DATA` block swapped in, written directly in the call, with title "Recap <day>" and height ≈ 100 + 120 × topics + 20 × detail rows + 40 × open items. Keep `DATA` valid JS (escape `"` inside strings, use „…“ for quotes in text); a syntax error shows as an empty page.
+Never use `html_preview`; the frame resizes itself to fit. Write `DATA` exactly once: one `Edit` on the copy replacing the example `DATA` block with the real one; don't syntax-check it separately or read the file back. Then call `html_render` with `path` = the copy's absolute path (never inline `html`), title "Recap <day>" and height ≈ 100 + 120 × topics + 20 × detail rows + 40 × open items. Keep `DATA` valid JS (escape `"` inside strings, use „…“ for quotes in text); a syntax error shows as an empty page.
 
 ## 5. Reply
 
